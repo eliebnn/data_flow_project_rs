@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Demo</title>
+</head>
+<body>
+  <pre><div id="data1">Waiting for data...</div></pre>
+  <br />
+  <div id="data2">Waiting for data...</div>
+
+  <script>
+    var ws;
+
+    function init() {
+      ws = new WebSocket('ws://localhost:8080');
+
+      ws.onopen = function() {
+        console.log('WebSocket connection established');
+
+        // Subscribe to these channels
+        ws.send("channel1");
+        ws.send("channel2");
+      };
+
+      ws.onmessage = function(event) {
+
+        var receivedMsg = event.data;
+        const obj = JSON.parse(receivedMsg);
+
+        if (obj.channel == 1){
+          document.getElementById('data1').textContent = JSON.stringify(obj.data, null, 2);;
+        }
+        if (obj.channel == 2){
+          document.getElementById('data2').textContent = obj.data;
+        }
+        
+      };
+
+      ws.onclose = function() {
+        console.log('WebSocket connection closed');
+        setTimeout(init, 1000); // Try to reconnect every 1 second if connection is lost
+      };
+
+      ws.onerror = function(err) {
+        console.log('WebSocket encountered error: ', err.message, 'Closing socket');
+        ws.close();
+      };
+    }
+
+    window.addEventListener('load', init, false);
+  </script>
+</body>
+</html>

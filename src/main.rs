@@ -22,6 +22,5 @@ async fn main() {
     else {
         println!("Starting UDP Server");
         UDPServer::run().await;
-        
     }
 }

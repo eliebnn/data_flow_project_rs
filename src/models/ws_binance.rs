@@ -1,15 +1,13 @@
 use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
-use futures_util::stream::StreamExt;
-use url::Url;
-use futures_util::SinkExt;
-use serde_json::Value;
 use tokio::net::UdpSocket;
-use core::fmt::Debug;
+use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use erased_serde::serialize_trait_object;
 use serde_this_or_that::as_f64;
+use core::fmt::Debug;
 use dotenv::dotenv;
-
+use url::Url;
 
 // Payload Struct
 

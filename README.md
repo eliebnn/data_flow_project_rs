@@ -12,34 +12,34 @@ Content of main.rs:
 #[tokio::main]
 async fn main() {
 
-    let args: Vec<_> = env::args().collect();
-
-    if args.len() == 2 {
+    let binance_ws_handle = tokio::spawn(async move {
         println!("Starting BTC Client");
-        BinanceClient::new().run().await;
-    }
-    else if args.len() == 3 {
-        println!("Starting WS Server");
-        WSServer::run().await;
-    }
-    else {
+        BinanceClient::new().run().await
+    });
+    
+    let udp_server_handle = tokio::spawn(async move {
         println!("Starting UDP Server");
         UDPServer::run().await;
+    });
+
+    let ws_server_handle = tokio::spawn(async move {
+        println!("Starting WS Server");
+        WSServer::run().await;
+    });
+
+    for handle in [binance_ws_handle, udp_server_handle, ws_server_handle] {
+        let _ = handle.await;
     }
+
 }
 ```
 
 In `CLI`, run these:
 
 ```cmd
-// This will run the UDP Server
 data_flow_project_rs.exe 
-
-// This will run the Binance WebSocket Client
-data_flow_project_rs.exe binance
-
-// This will run the local WebSocker Server
-data_flow_project_rs.exe ws server 
 ```
 
-Then open in your brower `/src/html/index.html`
+Then open in your browser `/src/html/index.html` - there should be two channels: 
+- first will pop Binance JSON data
+- second will pop current UTC date time

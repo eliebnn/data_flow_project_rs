@@ -4,23 +4,26 @@ use models::ws_binance::BinanceClient;
 use models::ws_server::WSServer;
 use models::udp_server::UDPServer;
 
-use std::env;
-
 #[tokio::main]
 async fn main() {
 
-    let args: Vec<_> = env::args().collect();
-
-    if args.len() == 2 {
+    let binance_ws_handle = tokio::spawn(async move {
         println!("Starting BTC Client");
-        BinanceClient::new().run().await;
-    }
-    else if args.len() == 3 {
-        println!("Starting WS Server");
-        WSServer::run().await;
-    }
-    else {
+        BinanceClient::new().run().await
+    });
+    
+    let udp_server_handle = tokio::spawn(async move {
         println!("Starting UDP Server");
         UDPServer::run().await;
+    });
+
+    let ws_server_handle = tokio::spawn(async move {
+        println!("Starting WS Server");
+        WSServer::run().await;
+    });
+
+    for handle in [binance_ws_handle, udp_server_handle, ws_server_handle] {
+        let _ = handle.await;
     }
+
 }

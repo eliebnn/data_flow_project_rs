@@ -80,8 +80,8 @@ pub struct TickerJson {
         volume_24h: f64,
         #[serde(rename(serialize="quote_volume_24h", deserialize="q"), deserialize_with="as_f64")]
         quote_volume_24h: f64,
-        #[serde(rename(serialize="Q", deserialize="Q"), deserialize_with="as_f64")]
-        Q: f64,
+        #[serde(rename(serialize="to_be_define", deserialize="Q"), deserialize_with="as_f64")]
+        to_be_define: f64,
         #[serde(rename(serialize="open_time_utc", deserialize="O"))]
         open_time_utc: u64,
         #[serde(rename(serialize="close_time_utc", deserialize="C"))]
@@ -174,7 +174,7 @@ impl BinanceClient {
         }
     }
 
-    fn parse_channel(msg: &tungstenite::protocol::Message) -> Option<String> {
+    fn parse_channel(msg: &tokio_tungstenite::tungstenite::protocol::Message) -> Option<String> {
 
         match serde_json::from_str::<Value>(&msg.to_text().unwrap()) {
     
